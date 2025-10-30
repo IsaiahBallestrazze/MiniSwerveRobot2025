@@ -9,11 +9,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Commands.AnalogOut;
 import frc.robot.Commands.AzimuthRotate;
 import frc.robot.Commands.FLModule;
+import frc.robot.Commands.ModuleGroup;
 import frc.robot.Commands.MotorMove;
-import frc.robot.Commands.PrintJoy;
 import frc.robot.Subsystems.Controller;
 import frc.robot.Subsystems.Gyro;
 import frc.robot.Subsystems.QuadEncoders;
@@ -35,24 +34,21 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    // driverController.a().onTrue(new AnalogOut(s_gyro, true));
-    // driverController.b().onTrue(new AnalogOut(s_gyro, false));
+    // driverController.povRight().onTrue(new AzimuthRotate(s_swerve, 1));
+    // driverController.povRight().onFalse(new AzimuthRotate(s_swerve, 0));
 
-    driverController.povRight().onTrue(new AzimuthRotate(s_swerve, 1));
-    driverController.povRight().onFalse(new AzimuthRotate(s_swerve, 0));
-
-    driverController.povLeft().onTrue(new AzimuthRotate(s_swerve, -1));
-    driverController.povLeft().onFalse(new AzimuthRotate(s_swerve, 0));
+    // driverController.povLeft().onTrue(new AzimuthRotate(s_swerve, -1));
+    // driverController.povLeft().onFalse(new AzimuthRotate(s_swerve, 0));
     
-    // driverController.povUp().onTrue(new MotorMove(s_swerve, 1));
-    // driverController.povUp().onFalse(new MotorMove(s_swerve, 0));
+    // // driverController.povUp().onTrue(new MotorMove(s_swerve, 1));
+    // // driverController.povUp().onFalse(new MotorMove(s_swerve, 0));
 
-    // driverController.povDown().onTrue(new MotorMove(s_swerve, -1));
-    // driverController.povDown().onFalse(new MotorMove(s_swerve, 0));
+    // // driverController.povDown().onTrue(new MotorMove(s_swerve, -1));
+    // // driverController.povDown().onFalse(new MotorMove(s_swerve, 0));
 
-    //driverController.axisMagnitudeGreaterThan(1,.1).onTrue(new PrintJoy(s_controller, driverController));
-    driverController.a().onTrue(new FLModule(s_swerve, s_gyro, s_QuadEncoders, s_controller, driverController));
-
+    // //driverController.axisMagnitudeGreaterThan(1,.1).onTrue(new PrintJoy(s_controller, driverController));
+    // driverController.a().onTrue(new FLModule(s_swerve, s_gyro, s_QuadEncoders, s_controller, driverController));
+    s_swerve.setDefaultCommand(getModuleCommand());
   }
 
   public double GetleftJoyX(){
@@ -74,4 +70,9 @@ public Gyro GetGyro() {
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }
+
+  public Command getModuleCommand(){
+    return new ModuleGroup(s_swerve, s_gyro, s_QuadEncoders, s_controller, driverController);
+  }
+
 }

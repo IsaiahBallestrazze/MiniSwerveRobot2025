@@ -14,7 +14,7 @@ import frc.robot.Subsystems.Swerve;
 import frc.robot.Subsystems.QuadEncoders;
 import frc.robot.Subsystems.Controller;
 
-public class FLModule extends Command {
+public class BLModule extends Command {
 
 //Subsystems
 Swerve s_Swerve;
@@ -45,7 +45,7 @@ boolean previousDriveDirection = false;
 
 private CommandXboxController xboxController;
 
-  public FLModule(Swerve d_Swerve, Gyro d_Gyro, QuadEncoders d_QuadEncoders, Controller d_Controller, CommandXboxController driverController) {
+  public BLModule(Swerve d_Swerve, Gyro d_Gyro, QuadEncoders d_QuadEncoders, Controller d_Controller, CommandXboxController driverController) {
     // Use addRequirements() here to declare subsystem dependencies.
     s_Swerve = d_Swerve;
     s_Gyro = d_Gyro;
@@ -69,13 +69,13 @@ private CommandXboxController xboxController;
     // get direciton and speed of motor
     //output direcoitn and speed of motor to arduino
 
-    swervePosition = (s_QuadEncoders.getFLAzimuthEncoder()); // gets angle from -180 to 180 
+    swervePosition = (s_QuadEncoders.getBLAzimuthEncoder()); // gets angle from -180 to 180 
     gyroAngle = -s_Gyro.getGyroYaw(); //gets angle from -180 to 180
     controllerAngle = Math.toDegrees(s_Controller.getControllerAngle(xboxController.getLeftX(), xboxController.getLeftY())); // from 0 to 2pi
     controllermagnitude = s_Controller.getControllerMagnitude(xboxController.getLeftX(), xboxController.getLeftY(), controllerAngle); // form 0 to 1
 
     //System.out.println(gyroAngle);
-      SmartDashboard.putNumber("Gyro Angle", gyroAngle);  
+    //SmartDashboard.putNumber("Gyro Angle", gyroAngle);  
 
 
     // System.out.println("Drive Direciton: " + s_Swerve.CalculateDriveDirection(controllermagnitude, controllerAngle, swervePosition));
@@ -92,13 +92,13 @@ private CommandXboxController xboxController;
     // System.out.println("Azimuth speed: " + azimuthSpeed);
 
     if(controllermagnitude > joystickDeadband) {
-      s_Swerve.setFLAzimuth(azimuthSpeed,azimuthdirection); //------------------------------------------
-      s_Swerve.setFLDrive(driveSpeed,true); //------------------------------------------
+      s_Swerve.setBLAzimuth(azimuthSpeed,azimuthdirection); //------------------------------------------
+      s_Swerve.setBLDrive(driveSpeed,true); //------------------------------------------
       previousAzimuthDirection = azimuthdirection;
       previousDriveDirection = driveDirection;
     } else{
-      s_Swerve.setFLAzimuth(0,previousAzimuthDirection);
-      s_Swerve.setFLDrive(0,false); //------------------------------------------
+      s_Swerve.setBLAzimuth(0,previousAzimuthDirection);
+      s_Swerve.setBLDrive(0,false); //------------------------------------------
 
       //s_Swerve.setFLDrive(0,previousDriveDirection);
     }     

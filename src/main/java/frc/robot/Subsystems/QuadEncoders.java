@@ -5,6 +5,7 @@
 package frc.robot.Subsystems;
 
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class QuadEncoders extends SubsystemBase {
@@ -26,10 +27,10 @@ public class QuadEncoders extends SubsystemBase {
     // This method will be called once per scheduler run
     //converts it back to -180 to 180
 
-    FRAzimuthEncoder.setDistancePerPulse(0.05);
+    FRAzimuthEncoder.setDistancePerPulse(0.8905);
     FLAzimuthEncoder.setDistancePerPulse(.8905);
-    BRAzimuthEncoder.setDistancePerPulse(0.05);
-    BLAzimuthEncoder.setDistancePerPulse(0.05);  }
+    BRAzimuthEncoder.setDistancePerPulse(0.8905);
+    BLAzimuthEncoder.setDistancePerPulse(0.8905);  }
 
     public double getFRAzimuthEncoder() {
       double rawDistance = FRAzimuthEncoder.getDistance();
@@ -51,10 +52,10 @@ public class QuadEncoders extends SubsystemBase {
       if(rawDistance > 1000) rawDistance -= 1000;
       if(rawDistance < -1000) rawDistance +=1000;
       //System.out.println("IN WHILE LOOP");
-
     }
     //System.out.println("SENT ANGLE " + rawDistance);
-    return (rawDistance * scaleFactor) -180;
+    System.out.println((rawDistance * scaleFactor));
+    return (rawDistance * scaleFactor);
   }
   
   public double getBRAzimuthEncoder() {

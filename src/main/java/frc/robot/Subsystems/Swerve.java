@@ -62,7 +62,7 @@ public void setFRDrive(double speed, boolean direction){
   FRDriveDirectionPin.setVoltage(outputVolts);
   FRDriveSpeedPin.set(newSpeed);
 
-  System.out.println("MovingMotor at " + newSpeed + " in " + direction + "direction");
+  //System.out.println("MovingMotor at " + newSpeed + " in " + direction + "direction");
 
 }
 
@@ -103,8 +103,8 @@ public void setBLDrive(double speed, boolean direction){
   double newSpeed = map(speed, 0, 1, -1, 1);
   BLDriveDirectionPin.set(direction);
   BLDriveSpeedPin.set(newSpeed);
-  System.out.print("Swerve Says ");
-  System.out.println(direction);
+  //System.out.print("Swerve Says ");
+  //System.out.println(direction);
 }
 
 public void setBLAzimuth(double speed, boolean direction){
@@ -136,8 +136,24 @@ double map(double x, double in_min, double in_max, double out_min, double out_ma
 
 // }
 
-public double CalculateDriveSpeed(double controllerMagnitude, double controllerAngle, double AzimuthAngle){
-  return Math.abs(Math.cos((AzimuthAngle - controllerAngle)) * controllerMagnitude);
+public double CalculateDriveSpeed(double controllerMagnitude, double controllerAngle, double azimuthAngle, double gyroAngle){
+
+
+
+
+  double difference = (azimuthAngle - controllerAngle) - gyroAngle;
+  double rawSpeed = Math.cos(Math.toRadians(difference)) * controllerMagnitude;
+  if (rawSpeed < 0) rawSpeed = 0;
+
+  SmartDashboard.putNumber("DriveSpeed", rawSpeed);
+  SmartDashboard.putNumber("controllerAngle", controllerAngle);
+  SmartDashboard.putNumber("SwerveAngle", azimuthAngle);
+
+
+  SmartDashboard.putNumber("difference", difference);
+
+
+  return rawSpeed;
 }
 
 public boolean CalculateDriveDirection(double controllerMagnitude, double controllerAngle, double AzimuthAngle){
