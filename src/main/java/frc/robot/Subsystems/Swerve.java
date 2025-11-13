@@ -10,7 +10,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Swerve extends SubsystemBase {
@@ -145,12 +144,12 @@ public double CalculateDriveSpeed(double controllerMagnitude, double controllerA
   double rawSpeed = Math.cos(Math.toRadians(difference)) * controllerMagnitude;
   if (rawSpeed < 0) rawSpeed = 0;
 
-  SmartDashboard.putNumber("DriveSpeed", rawSpeed);
-  SmartDashboard.putNumber("controllerAngle", controllerAngle);
-  SmartDashboard.putNumber("SwerveAngle", azimuthAngle);
+  // SmartDashboard.putNumber("DriveSpeed", rawSpeed);
+  // SmartDashboard.putNumber("controllerAngle", controllerAngle);
+  // SmartDashboard.putNumber("SwerveAngle", azimuthAngle);
 
 
-  SmartDashboard.putNumber("difference", difference);
+  // SmartDashboard.putNumber("difference", difference);
 
 
   return rawSpeed;
@@ -183,10 +182,12 @@ public double CalculateAzimuthSpeed(double controllerAngle, double azimuthAngle,
   double azimuthSpeed = pidController.calculate(0,setPoint);
   if(azimuthSpeed > 1) azimuthSpeed = 1;
 
-  SmartDashboard.putNumber("Setpoint", setPoint);
-  SmartDashboard.putNumber("Condition1", Math.abs(controllerAngle - azimuthAngle));  
-  SmartDashboard.putNumber("Condition2", Math.abs((360 - (azimuthAngle - controllerAngle))));
-  SmartDashboard.putNumber("Azimuth Speed", azimuthSpeed);
+  // SmartDashboard.putNumber("Setpoint", setPoint);
+  // SmartDashboard.putNumber("Condition1", Math.abs(controllerAngle - azimuthAngle));  
+
+  // SmartDashboard.putNumber("Condition1", Math.abs(controllerAngle - azimuthAngle));  
+  // SmartDashboard.putNumber("Condition2", Math.abs((360 - (azimuthAngle - controllerAngle))));
+  // SmartDashboard.putNumber("Azimuth Speed", azimuthSpeed);
 
   return Math.abs(azimuthSpeed);
 }
@@ -197,7 +198,7 @@ public Boolean CalculateAzimuthDirection(double controllerAngle, double azimuthA
   double setPoint;
 
   boolean method1 = ((difference <= 180) && (difference >= -180)) ? true: false;
-  boolean method2 = (azimuthAngle >= 0) ? true: false;
+  boolean method2 = (azimuthAngle >= 0) ? true: false; //maybe change this because it only seems to happen when gyro rotated
   boolean method3 = (azimuthAngle < 0) ? true: false;
 
   if(method1){
@@ -212,7 +213,7 @@ public Boolean CalculateAzimuthDirection(double controllerAngle, double azimuthA
 
   double azimuthSpeed = pidController.calculate(0,setPoint);
   boolean returnValue = (azimuthSpeed > 0) ? true : false;
-  SmartDashboard.putBoolean("Direciton", returnValue);
+ // SmartDashboard.putBoolean("Direciton", returnValue);
   return returnValue;
 }
 

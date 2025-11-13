@@ -28,41 +28,52 @@ public class QuadEncoders extends SubsystemBase {
     //converts it back to -180 to 180
 
     FRAzimuthEncoder.setDistancePerPulse(0.8905);
-    FLAzimuthEncoder.setDistancePerPulse(.8905);
+    FLAzimuthEncoder.setDistancePerPulse(0.8905);
     BRAzimuthEncoder.setDistancePerPulse(0.8905);
-    BLAzimuthEncoder.setDistancePerPulse(0.8905);  }
+    BLAzimuthEncoder.setDistancePerPulse(0.8905);  
+  }
 
-    public double getFRAzimuthEncoder() {
-      double rawDistance = FRAzimuthEncoder.getDistance();
-      //double correctedDistance = rawDistance;
-      while(!((rawDistance < 1000) && (rawDistance > -1000))){
-        if(rawDistance > 1000) rawDistance -= 1000;
-        if(rawDistance < -1000) rawDistance +=1000;
-        //System.out.println("IN WHILE LOOP");
-
-      }
-      //System.out.println("SENT ANGLE " + rawDistance);
-      return rawDistance * scaleFactor;
+  public double getFRAzimuthEncoder() {
+    double rawDistance = FRAzimuthEncoder.getDistance();
+  
+    while(!((rawDistance < 1000) && (rawDistance > -1000))) {
+      if(rawDistance > 1000) rawDistance -= 1000;
+      if(rawDistance < -1000) rawDistance += 1000;
     }
+  
+    return rawDistance * scaleFactor;
+  }
   
   public double getFLAzimuthEncoder() {
     double rawDistance = FLAzimuthEncoder.getDistance();
-    //double correctedDistance = rawDistance;
-    while(!((rawDistance < 1000) && (rawDistance > -1000))){
+  
+    while(!((rawDistance < 1000) && (rawDistance > -1000))) {
       if(rawDistance > 1000) rawDistance -= 1000;
-      if(rawDistance < -1000) rawDistance +=1000;
-      //System.out.println("IN WHILE LOOP");
+      if(rawDistance < -1000) rawDistance += 1000;
     }
-    //System.out.println("SENT ANGLE " + rawDistance);
-    System.out.println((rawDistance * scaleFactor));
-    return (rawDistance * scaleFactor);
+  
+    return rawDistance * scaleFactor;
   }
   
   public double getBRAzimuthEncoder() {
-      return BRAzimuthEncoder.getDistance();
+    double rawDistance = BRAzimuthEncoder.getDistance();
+  
+    while(!((rawDistance < 1000) && (rawDistance > -1000))) {
+      if(rawDistance > 1000) rawDistance -= 1000;
+      if(rawDistance < -1000) rawDistance += 1000;
+    }
+  
+    return rawDistance * scaleFactor;
   }
   
   public double getBLAzimuthEncoder() {
-      return BLAzimuthEncoder.getDistance();
+    double rawDistance = BLAzimuthEncoder.getDistance();
+  
+    while(!((rawDistance < 1000) && (rawDistance > -1000))) {
+      if(rawDistance > 1000) rawDistance -= 1000;
+      if(rawDistance < -1000) rawDistance += 1000;
+    }
+  
+    return rawDistance * scaleFactor;
   }
 }

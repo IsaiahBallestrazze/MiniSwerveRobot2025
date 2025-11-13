@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AzimuthRotate;
 import frc.robot.Commands.FLModule;
-import frc.robot.Commands.ModuleGroup;
+import frc.robot.Commands.Modules;
 import frc.robot.Commands.MotorMove;
 import frc.robot.Subsystems.Controller;
 import frc.robot.Subsystems.Gyro;
@@ -72,7 +72,7 @@ public Gyro GetGyro() {
   }
 
   public Command getModuleCommand(){
-    return new ModuleGroup(s_swerve, s_gyro, s_QuadEncoders, s_controller, driverController);
+    return new Modules(s_swerve, s_gyro, s_QuadEncoders, s_controller, driverController);
   }
 
 }

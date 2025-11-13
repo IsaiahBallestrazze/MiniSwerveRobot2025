@@ -6,7 +6,6 @@ package frc.robot.Commands;
 
 import edu.wpi.first.hal.SimDevice.Direction;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Subsystems.Gyro;
@@ -75,7 +74,6 @@ private CommandXboxController xboxController;
     controllermagnitude = s_Controller.getControllerMagnitude(xboxController.getLeftX(), xboxController.getLeftY(), controllerAngle); // form 0 to 1
 
     //System.out.println(gyroAngle);
-      SmartDashboard.putNumber("Gyro Angle", gyroAngle);  
 
 
     // System.out.println("Drive Direciton: " + s_Swerve.CalculateDriveDirection(controllermagnitude, controllerAngle, swervePosition));
@@ -116,6 +114,6 @@ private CommandXboxController xboxController;
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 }
