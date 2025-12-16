@@ -76,4 +76,13 @@ public class QuadEncoders extends SubsystemBase {
   
     return rawDistance * scaleFactor;
   }
+
+  public void resetEncoders(){
+    FRAzimuthEncoder.reset();
+    FLAzimuthEncoder.reset();
+    BRAzimuthEncoder.reset();
+    BLAzimuthEncoder.reset();
+    System.out.println("Encoders Reset");
+  }
+
 }

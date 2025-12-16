@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Subsystems.Cameras;
 import frc.robot.Subsystems.Controller;
 import frc.robot.Subsystems.Gyro;
 import frc.robot.Subsystems.QuadEncoders;
@@ -23,15 +24,16 @@ public class Modules extends Command {
   Gyro s_Gyro;
   QuadEncoders s_QuadEncoders;
   Controller s_Controller;
+  Cameras s_Cameras;
 
   // Swerve Variables
-  PIDController FRpidSpeedControl = new PIDController(0.003, 0.001, 0.001); // (kp, ki, kd) proportional, integral,
+  PIDController FRpidSpeedControl = new PIDController(0.02, 0.001, 0.001); // (kp, ki, kd) proportional, integral,
                                                                             // derivative
-  PIDController FLpidSpeedControl = new PIDController(0.008, 0.001, 0.001); // (kp, ki, kd) proportional, integral,
+  PIDController FLpidSpeedControl = new PIDController(0.02, 0.001, 0.001); // (kp, ki, kd) proportional, integral,
                                                                             // derivative
-  PIDController BRpidSpeedControl = new PIDController(0.008, 0.001, 0.001); // (kp, ki, kd) proportional, integral,
+  PIDController BRpidSpeedControl = new PIDController(0.02, 0.001, 0.001); // (kp, ki, kd) proportional, integral,
                                                                             // derivative
-  PIDController BLpidSpeedControl = new PIDController(0.008, 0.001, 0.001); // (kp, ki, kd) proportional, integral,
+  PIDController BLpidSpeedControl = new PIDController(0.02, 0.001, 0.001); // (kp, ki, kd) proportional, integral,
                                                                             // derivative
 
   // Gyro Variables
@@ -50,6 +52,9 @@ public class Modules extends Command {
   boolean previousAzimuthDirection = false;
   boolean previousDriveDirection = false;
 
+  private double rightMagnitude;
+  private boolean rotationDirection;
+
   private CommandXboxController xboxController;
 
   //memory variables
@@ -58,13 +63,14 @@ public class Modules extends Command {
       boolean previousBLAzimuthDirection;
       boolean previousBRAzimuthDirection;
 
-  public Modules(Swerve d_Swerve, Gyro d_Gyro, QuadEncoders d_QuadEncoders, Controller d_Controller,
+  public Modules(Swerve d_Swerve, Gyro d_Gyro, QuadEncoders d_QuadEncoders, Controller d_Controller, Cameras d_Cameras,
       CommandXboxController driverController) {
     // Use addRequirements() here to declare subsystem dependencies.
     s_Swerve = d_Swerve;
     s_Gyro = d_Gyro;
     s_QuadEncoders = d_QuadEncoders;
     s_Controller = d_Controller;
+    s_Cameras = d_Cameras;
     xboxController = driverController;
 
     addRequirements(s_Swerve, s_Gyro, s_QuadEncoders, s_Controller);
@@ -73,6 +79,7 @@ public class Modules extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    s_Cameras.StartCamera();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -95,15 +102,22 @@ public class Modules extends Command {
     SmartDashboard.putNumber("Gyro", gyroAngle);  
 
     // Controller angle and magnitude
+
+    //right
+    rightMagnitude = xboxController.getRightX();
+    rotationDirection = (rightMagnitude > 0) ? true : false;
+    rightMagnitude = Math.abs(rightMagnitude);
+    //left
     controllerAngle = Math.toDegrees(s_Controller.getControllerAngle(xboxController.getLeftX(), xboxController.getLeftY())); // from 0 to 2pi
     controllermagnitude = s_Controller.getControllerMagnitude(xboxController.getLeftX(), xboxController.getLeftY(),controllerAngle); // form 0 to 1
+    SmartDashboard.putNumber("Right Magnitude", rightMagnitude);  
     SmartDashboard.putNumber("Controller Angle", controllerAngle);  
     SmartDashboard.putNumber("Controller Magnitude", controllermagnitude);  
     
     // === AZIMUTH DIRECTIONS ===
     boolean FLAzimuthDirection = s_Swerve.CalculateAzimuthDirection(controllerAngle, FLQuad, FLpidSpeedControl, gyroAngle);
-    boolean FRAzimuthDirection = s_Swerve.CalculateAzimuthDirection(controllerAngle, FRQuad, FRpidSpeedControl, gyroAngle);
-    boolean BLAzimuthDirection = s_Swerve.CalculateAzimuthDirection(controllerAngle, BLQuad, BLpidSpeedControl, gyroAngle);
+    boolean FRAzimuthDirection = !s_Swerve.CalculateAzimuthDirection(controllerAngle, FRQuad, FRpidSpeedControl, gyroAngle);//////IMPORTANT IF TWITCHING AND PID TUNING DOESNT FIX
+    boolean BLAzimuthDirection = !s_Swerve.CalculateAzimuthDirection(controllerAngle, BLQuad, BLpidSpeedControl, gyroAngle);
     boolean BRAzimuthDirection = s_Swerve.CalculateAzimuthDirection(controllerAngle, BRQuad, BRpidSpeedControl, gyroAngle);
     SmartDashboard.putBoolean("FL_AZ Direction", FLAzimuthDirection);  
     SmartDashboard.putBoolean("FR_AZ Direction", FRAzimuthDirection);  
@@ -131,7 +145,8 @@ public class Modules extends Command {
     SmartDashboard.putNumber("BR_DR Speed", BRDriveSpeed);  
 
     // === APPLY OUTPUTS ===
-    if (controllermagnitude > joystickDeadband) {
+
+    if ((controllermagnitude > joystickDeadband)) {
       // --- Azimuth Motors ---
        s_Swerve.setFLAzimuth(FLAzimuthSpeed, FLAzimuthDirection);
        s_Swerve.setFRAzimuth(FRAzimuthSpeed, FRAzimuthDirection);
@@ -140,17 +155,52 @@ public class Modules extends Command {
 
       // --- Drive Motors ---
        s_Swerve.setFLDrive(FLDriveSpeed, true);
-       s_Swerve.setFRDrive(FRDriveSpeed, true);
+       s_Swerve.setFRDrive(FRDriveSpeed, false);
        s_Swerve.setBLDrive(BLDriveSpeed, true);
        s_Swerve.setBRDrive(BRDriveSpeed, true);
 
       // Store previous azimuth directions per module
-      boolean previousFLAzimuthDirection = FLAzimuthDirection;
-      boolean previousFRAzimuthDirection = FRAzimuthDirection;
-      boolean previousBLAzimuthDirection = BLAzimuthDirection;
-      boolean previousBRAzimuthDirection = BRAzimuthDirection;
+      previousFLAzimuthDirection = FLAzimuthDirection;
+      previousFRAzimuthDirection = FRAzimuthDirection;
+      previousBLAzimuthDirection = BLAzimuthDirection;
+      previousBRAzimuthDirection = BRAzimuthDirection;
 
     } else {
+
+      if(rightMagnitude > joystickDeadband){
+        //set each swerve module to the correct angle and give it a speed based on the magnitude
+        int NEangle =  135;
+        int NWangle =  45;
+        int SEangle = -135;
+        int SWangle = -45;
+
+
+        // FLAzimuthSpeed = s_Swerve.CalculateAzimuthSpeed(NEangle, FLQuad, FLpidSpeedControl, gyroAngle);
+        // FRAzimuthSpeed = s_Swerve.CalculateAzimuthSpeed(SEangle, FRQuad, FRpidSpeedControl, gyroAngle);
+        // BLAzimuthSpeed = s_Swerve.CalculateAzimuthSpeed(NWangle, BLQuad, BLpidSpeedControl, gyroAngle);
+        // BRAzimuthSpeed = s_Swerve.CalculateAzimuthSpeed(SWangle, BRQuad, BRpidSpeedControl, gyroAngle);
+
+        FLAzimuthSpeed = s_Swerve.CalculateAzimuthSpeed(NWangle, FLQuad, FLpidSpeedControl, gyroAngle);
+        FRAzimuthSpeed = s_Swerve.CalculateAzimuthSpeed(NWangle, FRQuad, FRpidSpeedControl, gyroAngle);
+        BLAzimuthSpeed = s_Swerve.CalculateAzimuthSpeed(NWangle, BLQuad, BLpidSpeedControl, gyroAngle);
+        BRAzimuthSpeed = s_Swerve.CalculateAzimuthSpeed(NWangle, BRQuad, BRpidSpeedControl, gyroAngle);
+
+         FLAzimuthDirection = s_Swerve.CalculateAzimuthDirection(NEangle, FLQuad, FLpidSpeedControl, gyroAngle);
+         FRAzimuthDirection = !s_Swerve.CalculateAzimuthDirection(SEangle, FRQuad, FRpidSpeedControl, gyroAngle);//////IMPORTANT IF TWITCHING AND PID TUNING DOESNT FIX
+         BLAzimuthDirection = !s_Swerve.CalculateAzimuthDirection(NWangle, BLQuad, BLpidSpeedControl, gyroAngle);
+         BRAzimuthDirection = s_Swerve.CalculateAzimuthDirection(SWangle, BRQuad, BRpidSpeedControl, gyroAngle);
+
+        s_Swerve.setFLAzimuth(FLAzimuthSpeed, FLAzimuthDirection);
+        s_Swerve.setFRAzimuth(FRAzimuthSpeed, FRAzimuthDirection);
+        s_Swerve.setBLAzimuth(BLAzimuthSpeed, BLAzimuthDirection);
+        s_Swerve.setBRAzimuth(BRAzimuthSpeed, BRAzimuthDirection);
+
+        s_Swerve.setFLDrive(rightMagnitude, true);
+        s_Swerve.setFRDrive(rightMagnitude, false);
+        s_Swerve.setBLDrive(rightMagnitude, true);
+        s_Swerve.setBRDrive(rightMagnitude, true);
+
+      }else{
       // --- Azimuth Motors (hold position with previous direction) ---
       s_Swerve.setFLAzimuth(0, previousFLAzimuthDirection);
       s_Swerve.setFRAzimuth(0, previousFRAzimuthDirection);
@@ -162,6 +212,7 @@ public class Modules extends Command {
       s_Swerve.setFRDrive(0, false);
       s_Swerve.setBLDrive(0, false);
       s_Swerve.setBRDrive(0, false);
+      }
     }
   }
 

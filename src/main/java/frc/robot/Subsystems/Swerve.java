@@ -212,7 +212,7 @@ public Boolean CalculateAzimuthDirection(double controllerAngle, double azimuthA
   }
 
   double azimuthSpeed = pidController.calculate(0,setPoint);
-  boolean returnValue = (azimuthSpeed > 0) ? true : false;
+  boolean returnValue = (azimuthSpeed > 0) ? true : false; //IF CHANGE thIS IT STARTS OSCILLATING
  // SmartDashboard.putBoolean("Direciton", returnValue);
   return returnValue;
 }

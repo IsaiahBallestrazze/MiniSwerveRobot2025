@@ -5,6 +5,7 @@
 package frc.robot.Subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class Controller extends SubsystemBase {
   /** Creates a new Controller. */
@@ -13,6 +14,11 @@ public class Controller extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  public boolean Ypressed(CommandXboxController controller){
+    System.out.println("Y " + controller.a().getAsBoolean());
+    return controller.y().getAsBoolean();
   }
 
   public double getControllerAngle(double joystickX, double joystickY){
